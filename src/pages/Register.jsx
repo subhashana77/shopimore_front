@@ -8,21 +8,24 @@ import imgGmail from "../asset/register/gmail.png";
 import imgPassword from "../asset/register/key.png";
 import imgCountry from "../asset/register/flag.png";
 import imgAddress from "../asset/register/home.png";
+import Sweetalert from "../util/Sweetalert";
 
 const Register = () => {
 
-    const [clientName, setName] = useState('');
-    const [clientTelephone, setTelephone] = useState('');
-    const [clientEmail, setEmail] = useState('');
-    const [clientPassword, setPassword] = useState('');
-    const [clientCountry, setCountry] = useState('');
-    const [clientAddress, setAddress] = useState('');
+    const [name, setName] = useState('');
+    const [telephone, setTelephone] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [country, setCountry] = useState('');
+    const [address, setAddress] = useState('');
     const [isPending, setIsPending] = useState(false);
-    const history = useHistory();
+
+    const current = new Date();
+    const reg_date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const requestData = { clientName, clientTelephone, clientEmail, clientPassword, clientCountry, clientAddress }
+        const requestData = { name, telephone, email, password, country, address, reg_date }
         setIsPending(true);
 
         fetch('http://localhost/projects/shopimore_back/api/client/client-register.php',{
@@ -30,13 +33,20 @@ const Register = () => {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(requestData)
         }).then(() => {
-            alert("User Registered!");
-            setIsPending(false);
-            history.go(-1);
-            history.push('/');
-        });
+            Sweetalert(
+                "Successfully",
+                "success",
+                name + " has registered!"
+            );
+            setName(() => "");
+            setTelephone(() => "");
+            setEmail(() => "");
+            setPassword(() => "");
+            setCountry(() => "");
+            setAddress(() => "");
 
-        console.log(requestData);
+            setIsPending(false);
+        });
     }
 
     return (
@@ -54,27 +64,27 @@ const Register = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="input-div">
                                 <img src={imgName} alt="name"/>
-                                <input type="text" required value={clientName} placeholder="Full name" onChange={ (e) => setName(e.target.value) }/>
+                                <input type="text" required value={name} placeholder="Full name" onChange={ (e) => setName(e.target.value) }/>
                             </div>
                             <div className="input-div">
                                 <img src={imgTelephone} alt="telephone"/>
-                                <input type="text" required value={clientTelephone} placeholder="Telephone" onChange={ (e) => setTelephone(e.target.value) }/>
+                                <input type="number" required value={telephone} placeholder="Telephone" onChange={ (e) => setTelephone(e.target.value) }/>
                             </div>
                             <div className="input-div">
                                 <img src={imgGmail} alt="email"/>
-                                <input type="text" required value={clientEmail} placeholder="E-Mail Address" onChange={ (e) => setEmail(e.target.value) }/>
+                                <input type="email" required value={email} placeholder="E-Mail Address" onChange={ (e) => setEmail(e.target.value) }/>
                             </div>
                             <div className="input-div">
                                 <img src={imgPassword} alt="password"/>
-                                <input type="text" required value={clientPassword} placeholder="Password" onChange={ (e) => setPassword(e.target.value) }/>
+                                <input type="password" required value={password} placeholder="Password" onChange={ (e) => setPassword(e.target.value) }/>
                             </div>
                             <div className="input-div">
                                 <img src={imgCountry} alt="country"/>
-                                <input type="text" required value={clientCountry} placeholder="Your country" onChange={ (e) => setCountry(e.target.value) }/>
+                                <input type="text" required value={country} placeholder="Your country" onChange={ (e) => setCountry(e.target.value) }/>
                             </div>
                             <div className="input-div">
                                 <img src={imgAddress} alt="address"/>
-                                <input type="text" required value={clientAddress} placeholder="Living Address" onChange={ (e) => setAddress(e.target.value) }/>
+                                <input type="text" required value={address} placeholder="Living Address" onChange={ (e) => setAddress(e.target.value) }/>
                             </div>
                             {!isPending && <button>Create my account</button>}
                             {isPending && <button disabled>Creating...</button>}
