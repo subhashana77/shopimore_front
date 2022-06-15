@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {useHistory} from "react-router-dom";
 
 import mainImage from "../asset/register/main.png";
@@ -9,6 +9,10 @@ import imgPassword from "../asset/register/key.png";
 import imgCountry from "../asset/register/flag.png";
 import imgAddress from "../asset/register/home.png";
 import Sweetalert from "../util/Sweetalert";
+import CountryList from "../component/CountryList";
+import CountryData from "../Data.json";
+// import Select from "react-select/base";
+// import CustomListDropDown from "../component/CountryDropDown";
 
 const Register = () => {
 
@@ -23,34 +27,107 @@ const Register = () => {
     const current = new Date();
     const reg_date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const requestData = { name, telephone, email, password, country, address, reg_date }
         setIsPending(true);
 
-        fetch('http://localhost/projects/shopimore_back/api/client/client-register.php',{
-            method: 'POST',
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(requestData)
-        }).then(() => {
-            Sweetalert(
-                "Successfully",
-                "success",
-                name + " has registered!"
-            );
-            setName(() => "");
-            setTelephone(() => "");
-            setEmail(() => "");
-            setPassword(() => "");
-            setCountry(() => "");
-            setAddress(() => "");
+        try {
+            let res = await fetch('http://localhost/projects/shopimore_back/api/client/client-register.php',{
+                method: 'POST',
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(requestData),
+            });
+            let resJson = await res.json();
+            console.log(resJson);
+            if (resJson.success === true) {
+                await Sweetalert(
+                    "success",
+                    "Successfully",
+                    name + " has registered!"
+                );
 
-            setIsPending(false);
-        });
+                setName(() => "");
+                setTelephone(() => "");
+                setEmail(() => "");
+                setPassword(() => "");
+                setCountry(() => "");
+                setAddress(() => "");
+
+                setIsPending(false);
+            } else {
+                await Sweetalert(
+                    "error",
+                    "Oops...",
+                    name + " registration fail!"
+                );
+                setIsPending(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
+
+
+
+    // const [data, setData] = useState(null);
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(null);
+
+    // useEffect(() => {
+    //     const getData = async () => {
+    //         try {
+    //             const response = await fetch(
+    //                 `https://restcountries.com/v3.1/all`
+    //             );
+    //
+    //             if (!response.ok) {
+    //                 throw new Error(
+    //                     `This is an HTTP error: The status is ${response.status}`
+    //                 );
+    //             }
+    //             let actualData = await response.json();
+    //
+    //             console.log(actualData);
+    //
+    //             setData(actualData);
+    //             setError(null);
+    //         } catch(err) {
+    //             setError(err.message);
+    //             setData(null);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     }
+    //     getData()
+    // }, []);
+
 
     return (
         <div className="register">
+
+
+
+
+
+            {/*<h1>API Posts</h1>*/}
+            {/*{loading && <div>A moment please...</div>}*/}
+            {/*{error && (*/}
+            {/*    <div>{`There is a problem fetching the post data - ${error}`}</div>*/}
+            {/*)}*/}
+            {/*<ul>*/}
+            {/*    {data && data.map(({ region }) => (*/}
+            {/*        <li>*/}
+            {/*            <h3>{region}</h3>*/}
+            {/*        </li>*/}
+            {/*    ))}*/}
+            {/*</ul>*/}
+
+
+
+
+
+
             <div className="container">
                 <div className="row">
                     <div className="col-6 m-auto p-5">
@@ -80,7 +157,7 @@ const Register = () => {
                             </div>
                             <div className="input-div">
                                 <img src={imgCountry} alt="country"/>
-                                <input type="text" required value={country} placeholder="Your country" onChange={ (e) => setCountry(e.target.value) }/>
+                                <CountryList placeholder="Your country..." data={CountryData}/>
                             </div>
                             <div className="input-div">
                                 <img src={imgAddress} alt="address"/>
