@@ -10,7 +10,7 @@ const CountryList = ({placeholder, data}) => {
         setFilterData(newFilter);
     }
     return (
-        <div className='form-group'>
+        <div className='form-group w-100'>
             <div className="search-country">
                 <input type="text" placeholder={placeholder} onChange={handleFilter}/>
             </div>
